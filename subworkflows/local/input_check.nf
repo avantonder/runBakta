@@ -30,6 +30,9 @@ def create_fasta_channel(LinkedHashMap row) {
     def fasta_meta = []
     if (!file(row.fasta).exists()) {
         exit 1, "ERROR: Please check input samplesheet -> FASTA file does not exist!\n${row.fasta}"
+        
+    }
+    else {
         fasta_meta = [ meta, [ file(row.fasta) ] ]
     }
         

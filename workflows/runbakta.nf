@@ -78,12 +78,12 @@ workflow RUNBAKTA {
     // MODULE: Run bakta
     //
     BAKTA (
-            INPUT_CHECK.out.fasta,
-            ch_baktadb,
-            [],
-            []           
-        )
-        ch_versions = ch_versions.mix(BAKTA.out.versions.first().ifEmpty(null))
+        INPUT_CHECK.out.fasta,
+        ch_baktadb,
+        [],
+        []           
+    )
+    ch_versions = ch_versions.mix(BAKTA.out.versions.first().ifEmpty(null))
    
     //
     // MODULE: Collate software versions
