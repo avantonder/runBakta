@@ -9,6 +9,6 @@ Example command:
         -c cambridge.config \
         -profile singularity \ 
         --input samplesheet.csv \
-        --baktadb home/ajv37/rds/hpc-work/databases/db \
+        --baktadb /home/ajv37/rds/hpc-work/databases/db \
         --outdir runBakta_results
     ```
