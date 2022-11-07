@@ -53,8 +53,9 @@ def multiqc_report = []
 def create_fasta_channel(LinkedHashMap record) {
     // create meta map
     def meta = [:]
-    meta.id    = record.id
-    meta.fasta = record.text
+    meta.id = record.id
+    def fasta_meta = []
+    fasta_meta = [ meta, [file(record.file)] ]
 }
 
 workflow RUNBAKTA {
@@ -64,7 +65,7 @@ workflow RUNBAKTA {
 
     fastas_ch = Channel
        .fromPath(params.fastas)
-       .splitFasta( record: [id: true, text: true])
+       .splitFasta( record: [id: true, file: true])
        .map { create_fasta_channel(it) }
        //.set { fastas_ch }
        //.map{ f -> tuple(f.baseName, tuple(file(f))) }
