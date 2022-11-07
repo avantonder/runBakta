@@ -20,7 +20,7 @@ workflow INPUT_CHECK {
     versions = SAMPLESHEET_CHECK.out.versions // channel: [ versions.yml ]
 }
 
-// Function to get list of [ meta, [ fastq_1, fastq_2 ] ]
+// Function to get list of [ meta, [ fasta ] ]
 def create_fasta_channel(LinkedHashMap row) {
     // create meta map
     def meta = [:]
@@ -30,8 +30,8 @@ def create_fasta_channel(LinkedHashMap row) {
     def fasta_meta = []
     if (!file(row.fasta).exists()) {
         exit 1, "ERROR: Please check input samplesheet -> FASTA file does not exist!\n${row.fasta}"
-        fastq_meta = [ meta, [ file(row.fasta) ] ]
+        fasta_meta = [ meta, [ file(row.fasta) ] ]
     }
         
-    return fastq_meta
+    return fasta_meta
 }
