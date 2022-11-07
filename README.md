@@ -8,7 +8,7 @@ Example command:
         -r main \
         -c cambridge.config \
         -profile singularity \ 
-        --fastas 'genomes/*.fasta' \
+        --input samplesheet.csv \
         --baktadb home/ajv37/rds/hpc-work/databases/db \
         --outdir runBakta_results
     ```

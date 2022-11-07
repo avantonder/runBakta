@@ -10,11 +10,11 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 WorkflowRunBakta.initialise(params, log)
 
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.fastas, params.multiqc_config]
+def checkPathParamList = [ params.input, params.multiqc_config]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
-if (params.fastas) { fastas_ch = file(params.fastas) } else { exit 1, 'No input files supplied!' }
+if (params.input) { ch_input = file(params.input) } else { exit 1, 'Input samplesheet not specified!' }
 if (params.baktadb) { ch_baktadb = file(params.baktadb) } else { exit 1, 'bakta database not specified!' }
 
 /*
@@ -25,6 +25,19 @@ if (params.baktadb) { ch_baktadb = file(params.baktadb) } else { exit 1, 'bakta 
 
 ch_multiqc_config        = file("$projectDir/assets/multiqc_config.yml",       checkIfExists: true)
 ch_multiqc_custom_config = params.multiqc_config ? file(params.multiqc_config) : []
+
+/*
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+    IMPORT LOCAL MODULES/SUBWORKFLOWS
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+*/
+
+//
+// SUBWORKFLOW: Consisting of a mix of local and nf-core/modules
+//
+
+// Local: Sub-workflows
+include { INPUT_CHECK                 } from '../subworkflows/local/input_check'
 
 /*
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -49,33 +62,23 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/
 // Info required for completion email and summary
 def multiqc_report = []
 
-// Function to get list of [ meta, [ fasta ] ]
-def create_fasta_channel(LinkedHashMap record) {
-    // create meta map
-    def meta = [:]
-    meta.id = record.id
-    def fasta_meta = []
-    fasta_meta = [ meta, [file(record.file)] ]
-}
-
 workflow RUNBAKTA {
 
     ch_versions = Channel.empty()
-    fastas_ch = Channel.empty()
 
-    fastas_ch = Channel
-       .fromPath(params.fastas)
-       .splitFasta( record: [id: true, file: true])
-       .map { create_fasta_channel(it) }
-       //.set { fastas_ch }
-       //.map{ f -> tuple(f.baseName, tuple(file(f))) }
-       //.dump ( tag: 'fastas_ch' )
+    //
+    // SUBWORKFLOW: Read in samplesheet, validate and stage input files
+    //
+    INPUT_CHECK (
+        ch_input
+    )
+    ch_versions = ch_versions.mix(INPUT_CHECK.out.versions)
     
     //
     // MODULE: Run bakta
     //
     BAKTA (
-            fastas_ch,
+            INPUT_CHECK.out.fasta,
             ch_baktadb,
             [],
             []           
