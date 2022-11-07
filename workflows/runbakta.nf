@@ -54,7 +54,7 @@ def create_fasta_channel(LinkedHashMap record) {
     // create meta map
     def meta = [:]
     meta.id    = record.id
-    meta.fasta = record.sequence
+    meta.fasta = record.text
 }
 
 workflow RUNBAKTA {
@@ -64,7 +64,7 @@ workflow RUNBAKTA {
 
     fastas_ch = Channel
        .fromPath(params.fastas)
-       .splitFasta( record: [id: true, sequence: true])
+       .splitFasta( record: [id: true, text: true])
        .map { create_fasta_channel(it) }
        //.set { fastas_ch }
        //.map{ f -> tuple(f.baseName, tuple(file(f))) }
