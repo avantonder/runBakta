@@ -12,8 +12,8 @@ class WorkflowRunBakta {
     //
     public static void initialise(params, log) {
 
-        if (!params.genome_size) {
-            log.error "genome size not specified! e.g. '--genome_size 4.3M"
+        if (!params.baktadb) {
+            log.error "bakta database not specified!"
             System.exit(1)
         }
     }
