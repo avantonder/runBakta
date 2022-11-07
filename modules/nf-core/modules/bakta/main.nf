@@ -1,5 +1,5 @@
 process BAKTA {
-    tag "$meta.id"
+    tag "${fasta.baseName}"
     label 'process_medium'
     label 'error_retry'
 
@@ -9,22 +9,22 @@ process BAKTA {
         'quay.io/biocontainers/bakta:1.5.0--pyhdfd78af_0' }"
 
     input:
-    tuple val(meta), path(fasta)
+    file(fasta)
     path db
     path proteins
     path prodigal_tf
 
     output:
-    tuple val(meta), path("${prefix}.embl")             , emit: embl
-    tuple val(meta), path("${prefix}.faa")              , emit: faa
-    tuple val(meta), path("${prefix}.ffn")              , emit: ffn
-    tuple val(meta), path("${prefix}.fna")              , emit: fna
-    tuple val(meta), path("${prefix}.gbff")             , emit: gbff
-    tuple val(meta), path("${prefix}.gff3")             , emit: gff
-    tuple val(meta), path("${prefix}.hypotheticals.tsv"), emit: hypotheticals_tsv
-    tuple val(meta), path("${prefix}.hypotheticals.faa"), emit: hypotheticals_faa
-    tuple val(meta), path("${prefix}.tsv")              , emit: tsv
-    tuple val(meta), path("${prefix}.txt")              , emit: txt
+    tuple val(${fasta.baseName}), path("${prefix}.embl")             , emit: embl
+    tuple val(${fasta.baseName}), path("${prefix}.faa")              , emit: faa
+    tuple val(${fasta.baseName}), path("${prefix}.ffn")              , emit: ffn
+    tuple val(${fasta.baseName}), path("${prefix}.fna")              , emit: fna
+    tuple val(${fasta.baseName}), path("${prefix}.gbff")             , emit: gbff
+    tuple val(${fasta.baseName}), path("${prefix}.gff3")             , emit: gff
+    tuple val(${fasta.baseName}), path("${prefix}.hypotheticals.tsv"), emit: hypotheticals_tsv
+    tuple val(${fasta.baseName}), path("${prefix}.hypotheticals.faa"), emit: hypotheticals_faa
+    tuple val(${fasta.baseName}), path("${prefix}.tsv")              , emit: tsv
+    tuple val(${fasta.baseName}), path("${prefix}.txt")              , emit: txt
     path "versions.yml"                                 , emit: versions
 
     when:
@@ -32,7 +32,7 @@ process BAKTA {
 
     script:
     def args = task.ext.args   ?: ''
-    prefix   = task.ext.prefix ?: "${meta.id}"
+    prefix   = task.ext.prefix ?: "${fasta.baseName}"
     def proteins_opt = proteins ? "--proteins ${proteins[0]}" : ""
     def prodigal_opt = prodigal_tf ? "--prodigal-tf ${prodigal_tf[0]}" : ""
     """
@@ -51,7 +51,7 @@ process BAKTA {
     """
 
     stub:
-    prefix = task.ext.prefix ?: "${meta.id}"
+    prefix = task.ext.prefix ?: "${${fasta.baseName}.id}"
     """
     touch ${prefix}.embl
     touch ${prefix}.faa
