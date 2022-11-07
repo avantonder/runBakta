@@ -49,15 +49,26 @@ include { CUSTOM_DUMPSOFTWAREVERSIONS } from '../modules/nf-core/modules/custom/
 // Info required for completion email and summary
 def multiqc_report = []
 
+// Function to get list of [ meta, [ fasta ] ]
+def create_fasta_channel(LinkedHashMap record) {
+    // create meta map
+    def meta = [:]
+    meta.id    = record.id
+    meta.fasta = record.sequence
+}
+
 workflow RUNBAKTA {
 
     ch_versions = Channel.empty()
     fastas_ch = Channel.empty()
 
     fastas_ch = Channel
-       .fromPath(params.fastas?.toString()?.tokenize(';'))
-       .map{ f -> tuple(f.baseName, tuple(file(f))) }
-       .dump ( tag: 'fastas_ch' )
+       .fromPath(params.fastas)
+       .splitFasta( record: [id: true, sequence: true])
+       .map { create_fasta_channel(it) }
+       .set { fastas_ch }
+       //.map{ f -> tuple(f.baseName, tuple(file(f))) }
+       //.dump ( tag: 'fastas_ch' )
     
     //
     // MODULE: Run bakta
