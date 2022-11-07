@@ -66,7 +66,7 @@ workflow RUNBAKTA {
        .fromPath(params.fastas)
        .splitFasta( record: [id: true, sequence: true])
        .map { create_fasta_channel(it) }
-       .set { fastas_ch }
+       //.set { fastas_ch }
        //.map{ f -> tuple(f.baseName, tuple(file(f))) }
        //.dump ( tag: 'fastas_ch' )
     
