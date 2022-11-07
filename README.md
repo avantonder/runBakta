@@ -1,2 +1,14 @@
 # runBakta
 nextflow pipeline for running bakta on assemblies
+
+Example command:
+
+    ```bash
+    NXF_VER=21.10.3 nextflow run avantonder/runBakta \
+        -r main \
+        -c cambridge.config \
+        -profile singularity \ 
+        --fastas 'genomes/*.fasta' \
+        --baktadb home/ajv37/rds/hpc-work/databases/db \
+        --outdir runBakta_results
+    ```
