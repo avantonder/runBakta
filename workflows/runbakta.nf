@@ -10,11 +10,11 @@ def summary_params = NfcoreSchema.paramsSummaryMap(workflow, params)
 WorkflowRunBakta.initialise(params, log)
 
 // Check input path parameters to see if they exist
-def checkPathParamList = [ params.input, params.multiqc_config]
+def checkPathParamList = [ params.fastas, params.multiqc_config]
 for (param in checkPathParamList) { if (param) { file(param, checkIfExists: true) } }
 
 // Check mandatory parameters
-if (params.fastas) { ch_input = file(params.fastas) } else { exit 1, 'No input files supplied!' }
+if (params.fastas) { fastas_ch = file(params.fastas) } else { exit 1, 'No input files supplied!' }
 if (params.baktadb) { ch_baktadb = file(params.baktadb) } else { exit 1, 'bakta database not specified!' }
 
 /*
